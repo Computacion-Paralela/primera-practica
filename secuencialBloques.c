@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define N 25 // Tamaño de la matriz
-#define M 25 // Tamaño del bloque
+#define N 1024 // Tamaño de la matriz
+#define M 32 // Tamaño del bloque
 
 int main() {
     int i, j, k, i1, j1, k1;
@@ -48,36 +48,37 @@ int main() {
     }
     clock_gettime(CLOCK_REALTIME, &end);
 
-    // Impresión de los resultados
+    // Calcular el tiempo transcurrido
     long seconds = end.tv_sec - begin.tv_sec;
     long nanoseconds = end.tv_nsec - begin.tv_nsec;
     double elapsed = seconds + nanoseconds*1e-9;
     printf("The elapsed time is %8.7f seconds", elapsed);
     printf("\n");
 
-    printf("Matriz A:\n");
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            printf("%.2f ", A[i][j]);
-        }   
-        printf("\n");
-    }
+    // Impresión de los resultados
+    // printf("Matriz A:\n");
+    // for (i = 0; i < N; i++) {
+    //     for (j = 0; j < N; j++) {
+    //         printf("%.2f ", A[i][j]);
+    //     }   
+    //     printf("\n");
+    // }
 
-    printf("Matriz B:\n");
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            printf("%.2f ", B[i][j]);
-        }   
-        printf("\n");
-    }
+    // printf("Matriz B:\n");
+    // for (i = 0; i < N; i++) {
+    //     for (j = 0; j < N; j++) {
+    //         printf("%.2f ", B[i][j]);
+    //     }   
+    //     printf("\n");
+    // }
 
-    printf("Matriz C:\n");
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            printf("%.2f ", C[i][j]);
-        }   
-        printf("\n");
-    }
+    // printf("Matriz C:\n");
+    // for (i = 0; i < N; i++) {
+    //     for (j = 0; j < N; j++) {
+    //         printf("%.2f ", C[i][j]);
+    //     }   
+    //     printf("\n");
+    // }
 
     // Liberación de memoria
     for (i = 0; i < N; i++) {
