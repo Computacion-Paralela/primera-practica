@@ -1,19 +1,13 @@
-// gcc ompNormal.c -o ompNormal -fopenmp
-// ./ompNormal
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
 #include <time.h>
 
 #define N 1024 // Tamaño de la matriz
+#define M 32 // Tamaño del bloque
 #define NUM_HILOS 1 // Número de hilos
 
-struct timespec begin, end;
-
-int main(){
-
-    int i, j, k;
+int main() {
+    int i, j, k, i1, j1, k1;
     double sum;
     double **A, **B, **C;
     struct timespec begin, end;
@@ -38,32 +32,34 @@ int main(){
 
     // Multiplicación de matrices
     clock_gettime(CLOCK_REALTIME, &begin);
-
-    // private(i,j,k,sum) indica que las variables j, k y sum son privadas para cada hilo, lo que significa que cada hilo tiene su propia copia de estas variables y no pueden ser compartidas entre hilos.
-    // shared(A,B,C) indica que las matrices A, B y C se compartirán entre los hilos y se les permitirá acceder a ellas y modificarlas.
-    #pragma omp parallel for private(i,j,k,sum) shared(A,B,C) num_threads(NUM_HILOS)
-    // debido al uso de pragma omp parallel for no se colocan los corchetes de barrera
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            sum = 0.0;
-            for (k = 0; k < N; k++) {
-                sum += A[i][k] * B[k][j];
+    // Recorrer los bloques de las matrices
+    for (i = 0; i < N; i += M) {
+        for (j = 0; j < N; j += M) {
+            for (k = 0; k < N; k += M) {
+                // Multiplicar los bloques correspondientes
+                // private(i,j,k,sum) indica que las variables j, k y sum son privadas para cada hilo, lo que significa que cada hilo tiene su propia copia de estas variables y no pueden ser compartidas entre hilos.
+                // shared(A,B,C) indica que las matrices A, B y C se compartirán entre los hilos y se les permitirá acceder a ellas y modificarlas.
+                #pragma omp parallel for private(i, j, k, i1, j1, k1) shared(A,B,C) num_threads(NUM_HILOS)
+                for (i1 = i; i1 < i+M; i1++) {
+                    for (j1 = j; j1 < j+M; j1++) {
+                        for (k1 = k; k1 < k+M; k1++) {
+                            C[i1][j1] += A[i1][k1] * B[k1][j1];
+                        }
+                    }
+                }
             }
-            C[i][j] = sum;
         }
     }
-    
     clock_gettime(CLOCK_REALTIME, &end);
-
 
     // Calcular el tiempo transcurrido
     long seconds = end.tv_sec - begin.tv_sec;
     long nanoseconds = end.tv_nsec - begin.tv_nsec;
     double elapsed = seconds + nanoseconds*1e-9;
-
     printf("The elapsed time is %8.7f seconds", elapsed);
     printf("\n");
 
+    // Impresión de los resultados
     // printf("Matriz A:\n");
     // for (i = 0; i < N; i++) {
     //     for (j = 0; j < N; j++) {
@@ -100,4 +96,3 @@ int main(){
 
     return 0;
 }
-
