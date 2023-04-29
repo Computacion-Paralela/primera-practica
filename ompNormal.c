@@ -6,13 +6,39 @@
 #include <omp.h>
 #include <time.h>
 
-#define N 1024 // Tamaño de la matriz
-#define NUM_HILOS 1 // Número de hilos
+// Función para guardar la matriz en un archivo
+void guardarMatriz(double **matriz, int nFilas, int nColumnas, char *nombreArchivo) {
+    FILE *archivo;
+    archivo = fopen(nombreArchivo, "w");
 
-struct timespec begin, end;
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    for (int i = 0; i < nFilas; i++) {
+        for (int j = 0; j < nColumnas; j++) {
+            fprintf(archivo, "%lf ", matriz[i][j]);
+        }
+        fprintf(archivo, "\n");
+    }
+
+    fclose(archivo);
+}
 
 int main(){
 
+    // Definición del tamaño de la matriz
+    int N;
+    printf("Ingrese el tamaño de la matriz (N): ");
+    scanf("%d", &N);
+
+    // Definición del número de hilos
+    int NUM_HILOS;
+    printf("Ingrese el número de hilos (NUM_HILOS): ");
+    scanf("%d", &NUM_HILOS);
+
+    // Inicialización de las variables
     int i, j, k;
     double sum;
     double **A, **B, **C;
@@ -42,7 +68,7 @@ int main(){
     // private(i,j,k,sum) indica que las variables j, k y sum son privadas para cada hilo, lo que significa que cada hilo tiene su propia copia de estas variables y no pueden ser compartidas entre hilos.
     // shared(A,B,C) indica que las matrices A, B y C se compartirán entre los hilos y se les permitirá acceder a ellas y modificarlas.
     #pragma omp parallel for private(i,j,k,sum) shared(A,B,C) num_threads(NUM_HILOS)
-    // debido al uso de pragma omp parallel for no se colocan los corchetes de barrera
+    // Debido al uso de pragma omp parallel for no se colocan los corchetes de barrera
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
             sum = 0.0;
@@ -54,7 +80,6 @@ int main(){
     }
     
     clock_gettime(CLOCK_REALTIME, &end);
-
 
     // Calcular el tiempo transcurrido
     long seconds = end.tv_sec - begin.tv_sec;
@@ -87,6 +112,16 @@ int main(){
     //     }   
     //     printf("\n");
     // }
+
+    // Guardado de las matrices en sus respectivos archivos
+    char *matrizA = "matrizA.txt";
+    guardarMatriz(A, N, N, matrizA);
+
+    char *matrizB = "matrizB.txt";
+    guardarMatriz(B, N, N, matrizB);
+
+    char *matrizC = "matrizC.txt";
+    guardarMatriz(C, N, N, matrizC);
 
     // Liberación de memoria
     for (i = 0; i < N; i++) {

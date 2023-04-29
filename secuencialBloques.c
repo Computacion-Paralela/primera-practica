@@ -2,10 +2,37 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define N 1024 // Tamaño de la matriz
-#define M 32 // Tamaño del bloque
+// Definición del tamaño del bloque
+#define M 8
+
+// Función para guardar la matriz en un archivo
+void guardarMatriz(double **matriz, int nFilas, int nColumnas, char *nombreArchivo) {
+    FILE *archivo;
+    archivo = fopen(nombreArchivo, "w");
+
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    for (int i = 0; i < nFilas; i++) {
+        for (int j = 0; j < nColumnas; j++) {
+            fprintf(archivo, "%lf ", matriz[i][j]);
+        }
+        fprintf(archivo, "\n");
+    }
+
+    fclose(archivo);
+}
 
 int main() {
+
+    // Definición del tamaño de la matriz    
+    int N;
+    printf("Ingrese el tamaño de la matriz (N): ");
+    scanf("%d", &N);
+
+    // Inicialización de las variables
     int i, j, k, i1, j1, k1;
     double sum;
     double **A, **B, **C;
@@ -79,6 +106,16 @@ int main() {
     //     }   
     //     printf("\n");
     // }
+    
+    // Guardado de las matrices en sus respectivos archivos
+    char *matrizA = "matrizA.txt";
+    guardarMatriz(A, N, N, matrizA);
+
+    char *matrizB = "matrizB.txt";
+    guardarMatriz(B, N, N, matrizB);
+
+    char *matrizC = "matrizC.txt";
+    guardarMatriz(C, N, N, matrizC);
 
     // Liberación de memoria
     for (i = 0; i < N; i++) {
