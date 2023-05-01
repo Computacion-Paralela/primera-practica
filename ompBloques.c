@@ -6,6 +6,8 @@
 #include <omp.h>
 #include <time.h>
 
+// Definición del número de hilos
+#define NUM_HILOS 32
 // Definición del tamaño del bloque
 #define M 8
 
@@ -36,11 +38,6 @@ int main() {
     printf("Ingrese el tamaño de la matriz (N): ");
     scanf("%d", &N);
 
-    //Definición del númerp de hilos
-    int NUM_HILOS;
-    printf("Ingrese el número de hilos (NUM_HILOS): ");
-    scanf("%d", &NUM_HILOS);
-
     // Inicialización de las variables
     int i, j, k, i1, j1, k1;
     double **A, **B, **C;
@@ -67,13 +64,17 @@ int main() {
     // Multiplicación de matrices
     clock_gettime(CLOCK_REALTIME, &begin);
     // Recorrer los bloques de las matrices
+    // private(i,j,k,sum) indica que las variables j, k y sum son privadas para cada hilo, lo que significa que cada hilo tiene su propia copia de estas variables y no pueden ser compartidas entre hilos.
+    // shared(A,B,C) indica que las matrices A, B y C se compartirán entre los hilos y se les permitirá acceder a ellas y modificarlas.
+    #pragma omp parallel for private(i, j, k, i1, j1, k1) shared(A,B,C) num_threads(NUM_HILOS)
     for (i = 0; i < N; i += M) {
+        // int ID = omp_get_thread_num();
+        // printf("iteracion: %d \n", i);
+        // printf("hello(%d) ", ID);
+        // printf("world(%d) \n", ID);
         for (j = 0; j < N; j += M) {
             for (k = 0; k < N; k += M) {
                 // Multiplicar los bloques correspondientes
-                // private(i,j,k,sum) indica que las variables j, k y sum son privadas para cada hilo, lo que significa que cada hilo tiene su propia copia de estas variables y no pueden ser compartidas entre hilos.
-                // shared(A,B,C) indica que las matrices A, B y C se compartirán entre los hilos y se les permitirá acceder a ellas y modificarlas.
-                #pragma omp parallel for private(i, j, k, i1, j1, k1) shared(A,B,C) num_threads(NUM_HILOS)
                 for (i1 = i; i1 < i+M; i1++) {
                     for (j1 = j; j1 < j+M; j1++) {
                         for (k1 = k; k1 < k+M; k1++) {

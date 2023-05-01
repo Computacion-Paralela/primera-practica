@@ -6,6 +6,9 @@
 #include <omp.h>
 #include <time.h>
 
+// Definición del número de hilos
+#define NUM_HILOS 32
+
 // Función para guardar la matriz en un archivo
 void guardarMatriz(double **matriz, int nFilas, int nColumnas, char *nombreArchivo) {
     FILE *archivo;
@@ -32,11 +35,6 @@ int main(){
     int N;
     printf("Ingrese el tamaño de la matriz (N): ");
     scanf("%d", &N);
-
-    // Definición del número de hilos
-    int NUM_HILOS;
-    printf("Ingrese el número de hilos (NUM_HILOS): ");
-    scanf("%d", &NUM_HILOS);
 
     // Inicialización de las variables
     int i, j, k;
@@ -70,6 +68,10 @@ int main(){
     #pragma omp parallel for private(i,j,k,sum) shared(A,B,C) num_threads(NUM_HILOS)
     // Debido al uso de pragma omp parallel for no se colocan los corchetes de barrera
     for (i = 0; i < N; i++) {
+        // int ID = omp_get_thread_num();
+        // printf("iteracion: %d \n", i);
+        // printf("hello(%d) ", ID);
+        // printf("world(%d) \n", ID);
         for (j = 0; j < N; j++) {
             sum = 0.0;
             for (k = 0; k < N; k++) {
