@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 
-#define BLOCKS_PER_GRID 40
-#define THREADS_PER_BLOCK 64
-
 void inicializar_matriz(int n, float *matriz) {
     for (int i = 0; i < n * n; i++) {
         matriz[i] = rand() % 10;
@@ -45,10 +42,17 @@ __global__ void matriz_multiplicar(float *a, float *b, float *c, int n) {
 }
 
 int main() {
+
     int n;
     printf("Ingrese el tamaño de la matriz (n): ");
     scanf("%d", &n);
-
+    int BLOCKS_PER_GRID;
+    printf("Ingrese el número de bloques por cluster (BLOCKS_PER_GRID): ");
+    scanf("%d", &n);
+    int THREADS_PER_BLOCK;
+    printf("Ingrese el número de hilos por bloque (THREADS_PER_BLOCK): ");
+    scanf("%d", &n);
+    
     // Asignar memoria en el host
     float *matriz_a = (float *) malloc(sizeof(float) * n * n);
     float *matriz_b = (float *) malloc(sizeof(float) * n * n);
