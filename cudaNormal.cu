@@ -48,11 +48,11 @@ int main() {
     scanf("%d", &n);
     int BLOCKS_PER_GRID;
     printf("Ingrese el número de bloques por cluster (BLOCKS_PER_GRID): ");
-    scanf("%d", &BLOCKS_PER_GRID);
+    scanf("%d", &n);
     int THREADS_PER_BLOCK;
     printf("Ingrese el número de hilos por bloque (THREADS_PER_BLOCK): ");
-    scanf("%d", &THREADS_PER_BLOCK);
-
+    scanf("%d", &n);
+    
     // Asignar memoria en el host
     float *matriz_a = (float *) malloc(sizeof(float) * n * n);
     float *matriz_b = (float *) malloc(sizeof(float) * n * n);
