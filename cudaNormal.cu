@@ -1,7 +1,11 @@
 //%%cu
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <cuda_runtime.h>
+
+#define BLOCKS_PER_GRID 16
+#define THREADS_PER_BLOCK 16
 
 void inicializar_matriz(int n, float *matriz) {
     for (int i = 0; i < n * n; i++) {
@@ -46,12 +50,8 @@ int main() {
     int n;
     printf("Ingrese el tamaño de la matriz (n): ");
     scanf("%d", &n);
-    int BLOCKS_PER_GRID;
-    printf("Ingrese el número de bloques por cluster (BLOCKS_PER_GRID): ");
-    scanf("%d", &n);
-    int THREADS_PER_BLOCK;
-    printf("Ingrese el número de hilos por bloque (THREADS_PER_BLOCK): ");
-    scanf("%d", &n);
+
+    struct timespec begin, end;
     
     // Asignar memoria en el host
     float *matriz_a = (float *) malloc(sizeof(float) * n * n);
@@ -83,7 +83,19 @@ int main() {
     dim3 grid_size(THREADS_PER_BLOCK, THREADS_PER_BLOCK, 1);
 
     // Lanzar kernel para multiplicar matrices 
+    clock_gettime(CLOCK_REALTIME, &begin);
+
     matriz_multiplicar<<<grid_size, block_size>>>(d_a, d_b, d_res, n);
+
+    clock_gettime(CLOCK_REALTIME, &end);
+
+    // Calcular el tiempo transcurrido
+    long seconds = end.tv_sec - begin.tv_sec;
+    long nanoseconds = end.tv_nsec - begin.tv_nsec;
+    double elapsed = seconds + nanoseconds*1e-9;
+
+    printf("The elapsed time is %8.7f seconds", elapsed);
+    printf("\n");
 
     // Copiar matriz resultado del dispositivo al host
     cudaMemcpy(matriz_res, d_res, sizeof(float) * n * n, cudaMemcpyDeviceToHost);
